@@ -17,7 +17,7 @@ tsd.json
 [Rr]elease/
 x64/
 build/
-# [Bb]in/
+[Bb]in/
 [Oo]bj/
 
 test/

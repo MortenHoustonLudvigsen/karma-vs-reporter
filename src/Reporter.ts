@@ -23,15 +23,11 @@ Reporter = function Reporter(baseReporterDecorator, config, fileList, helper, lo
     var testResults: Test.Results;
 
     this.onRunStart = function () {
-        log.info("onRunStart");
         testResults = new Test.Results();
-        log.info("onRunStart - testResults created");
         testResults.add(new Test.KarmaConfig(config));
-        log.info("onRunStart - testResults added");
         results = [];
         filesParsed = q.defer();
         filesPromise.then(function (files) {
-            log.info("onRunStart - files loaded");
             parseFiles(testResults, files, log);
             filesParsed.resolve();
         });
@@ -48,12 +44,8 @@ Reporter = function Reporter(baseReporterDecorator, config, fileList, helper, lo
     };
 
     this.onRunComplete = function () {
-        log.info('onRunComplete');
         filesParsed.promise.then(function () {
-            log.info('onRunComplete - files parsed');
             results.forEach(function (res) {
-                log.info('onRunComplete - result processing started');
-                log.info(res);
                 var parent = testResults;
                 res.result.suite.forEach(function (s) {
                     parent = parent.add(new Test.Suite(s));
@@ -70,11 +62,8 @@ Reporter = function Reporter(baseReporterDecorator, config, fileList, helper, lo
 
                 parent.add(test);
             });
-            log.info('onRunComplete - results processed');
 
-            helper.mkdirIfNotExists(path.dirname(outputFile), function () {
-                Util.writeFile(outputFile, testResults.toXml());
-            });
+            Util.writeFile(outputFile, testResults.toXml());
         });
     };
 

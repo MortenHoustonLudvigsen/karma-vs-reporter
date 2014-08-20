@@ -7,6 +7,7 @@ node_modules/
 *.suo
 *.user
 *.sln.docstates
+*.xml
 
 # Build results
 [Dd]ebug/
