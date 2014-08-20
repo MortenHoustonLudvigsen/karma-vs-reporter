@@ -57,7 +57,7 @@ var Test;
 
         KarmaConfig.prototype.objectToXml = function (parentElement, name, object) {
             var _this = this;
-            var element = parentElement.ele(name);
+            var element = this.createElement(parentElement, name);
             _.forIn(object, function (value, property) {
                 _this.valueToXml(element, property, value);
             });
@@ -65,16 +65,24 @@ var Test;
         };
 
         KarmaConfig.prototype.scalarToXml = function (parentElement, name, value) {
-            return parentElement.ele(name, value);
+            return this.createElement(parentElement, name, value);
         };
 
         KarmaConfig.prototype.arrayToXml = function (parentElement, name, value) {
             var _this = this;
-            var element = parentElement.ele(name);
+            var element = this.createElement(parentElement, name);
             _.forEach(value, function (item) {
                 _this.valueToXml(element, 'item', item);
             });
             return element;
+        };
+
+        KarmaConfig.prototype.createElement = function (parentElement, name, value) {
+            if (/\W/.test(name)) {
+                return parentElement.ele('item', { name: name }, value);
+            } else {
+                return parentElement.ele(name, value);
+            }
         };
         return KarmaConfig;
     })(Item);

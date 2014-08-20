@@ -47,7 +47,7 @@ module Test {
         }
 
         private objectToXml(parentElement, name: string, object) {
-            var element = parentElement.ele(name);
+            var element = this.createElement(parentElement, name);
             _.forIn(object, (value, property) => {
                 this.valueToXml(element, property, value);
             });
@@ -55,15 +55,23 @@ module Test {
         }
 
         private scalarToXml(parentElement, name: string, value) {
-            return parentElement.ele(name, value);
+            return this.createElement(parentElement, name, value);
         }
 
         private arrayToXml(parentElement, name: string, value) {
-            var element = parentElement.ele(name);
+            var element = this.createElement(parentElement, name);
             _.forEach(value, item => {
                 this.valueToXml(element, 'item', item);
             });
             return element;
+        }
+
+        private createElement(parentElement, name: string, value?) {
+            if (/\W/.test(name)) {
+                return parentElement.ele('item', { name: name }, value);
+            } else {
+                return parentElement.ele(name, value);
+            }
         }
     }
 
