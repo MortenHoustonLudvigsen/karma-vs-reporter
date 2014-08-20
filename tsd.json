@@ -11,9 +11,6 @@
     "node/node.d.ts": {
       "commit": "17f8e5aca2392978baf15a142410e3eedcc335cc"
     },
-    "lodash/lodash.d.ts": {
-      "commit": "17f8e5aca2392978baf15a142410e3eedcc335cc"
-    },
     "q/Q.d.ts": {
       "commit": "17f8e5aca2392978baf15a142410e3eedcc335cc"
     },
@@ -22,6 +19,9 @@
     },
     "source-map/source-map.d.ts": {
       "commit": "c10b6a363d18270e3239c7a2c0b4ace1dea2ef68"
+    },
+    "lodash/lodash.d.ts": {
+      "commit": "0a69471d4e84c7e142acaab8e1b6ea1e55839fc9"
     }
   }
 }

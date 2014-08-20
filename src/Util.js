@@ -1,16 +1,13 @@
-﻿var Javascript = require('./Javascript');
-var Test = require('./Test');
-var JasmineParser = require('./JasmineParser');
-
-var fs = require('fs');
+﻿var fs = require('fs');
 var path = require('path');
 var extend = require('extend');
 
 var Util;
 (function (Util) {
-    Util.configFile = path.resolve('KarmaVSReporter.json');
+    Util.configFile = path.resolve('karma-vs-reporter.json');
     Util.baseDir = process.cwd();
-    Util.outputFile = process.argv[2] || 'KarmaVSReporter.xml';
+    Util.outputFile = 'karma-vs-reporter.xml';
+    Util.port;
     Util.config = getConfig();
 
     function getConfig() {
@@ -81,24 +78,9 @@ var Util;
     Util.Try = Try;
 
     function createLogger(logger) {
-        return logger.create('KarmaVSReporter');
+        return logger.create('karma-vs-reporter');
     }
     Util.createLogger = createLogger;
-
-    function parseFiles(testResults, files, log) {
-        var jasmineParser = new JasmineParser();
-        files.served.forEach(function (file) {
-            try  {
-                var testFile = new Test.File(file.path);
-                var jsFile = new Javascript.Program({ path: file.path, content: file.content });
-                jasmineParser.parse(jsFile, testFile);
-                testResults.add(testFile);
-            } catch (e) {
-                log.error(e);
-            }
-        });
-    }
-    Util.parseFiles = parseFiles;
 })(Util || (Util = {}));
 
 module.exports = Util;

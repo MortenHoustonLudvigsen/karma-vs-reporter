@@ -5,6 +5,7 @@
     d.prototype = new __();
 };
 var Util = require("./Util");
+var _ = require("lodash");
 
 var xmlbuilder = require('xmlbuilder');
 
@@ -31,6 +32,53 @@ var Test;
         return Item;
     })();
     _Test.Item = Item;
+
+    var KarmaConfig = (function (_super) {
+        __extends(KarmaConfig, _super);
+        function KarmaConfig(config) {
+            _super.call(this);
+            this.config = config;
+        }
+        KarmaConfig.prototype.toXml = function (parentElement) {
+            return this.valueToXml(parentElement, 'KarmaConfig', this.config);
+        };
+
+        KarmaConfig.prototype.valueToXml = function (parentElement, name, value) {
+            if (value === null || value === undefined) {
+                return undefined;
+            } else if (_.isString(value) || _.isBoolean(value) || _.isDate(value) || _.isNumber(value)) {
+                return this.scalarToXml(parentElement, name, value);
+            } else if (_.isArray(value)) {
+                return this.arrayToXml(parentElement, name, value);
+            } else if (_.isObject(value)) {
+                return this.objectToXml(parentElement, name, value);
+            }
+        };
+
+        KarmaConfig.prototype.objectToXml = function (parentElement, name, object) {
+            var _this = this;
+            var element = parentElement.ele(name);
+            _.forIn(object, function (value, property) {
+                _this.valueToXml(element, property, value);
+            });
+            return element;
+        };
+
+        KarmaConfig.prototype.scalarToXml = function (parentElement, name, value) {
+            return parentElement.ele(name, value);
+        };
+
+        KarmaConfig.prototype.arrayToXml = function (parentElement, name, value) {
+            var _this = this;
+            var element = parentElement.ele(name);
+            _.forEach(value, function (item) {
+                _this.valueToXml(element, 'item', item);
+            });
+            return element;
+        };
+        return KarmaConfig;
+    })(Item);
+    _Test.KarmaConfig = KarmaConfig;
 
     var Results = (function (_super) {
         __extends(Results, _super);
@@ -79,12 +127,17 @@ var Test;
             this.name = name;
         }
         Suite.prototype.toXml = function (parentElement) {
-            var element = parentElement.ele('Suite', {
+            var attributes = {
                 Name: this.name,
-                Framework: this.framework,
-                Line: this.position.line,
-                Column: this.position.column
-            });
+                Framework: this.framework
+            };
+
+            if (this.position) {
+                attributes.Line = this.position.line;
+                attributes.Column = this.position.column;
+            }
+
+            var element = parentElement.ele('Suite', attributes);
             SourceToXml(element, this.originalPosition);
             this.children.forEach(function (child) {
                 child.toXml(element);
@@ -103,22 +156,21 @@ var Test;
             this.log = [];
         }
         Test.prototype.toXml = function (parentElement) {
-            //var attributes = {
-            //    Name: this.name
-            //};
-            //if (this.position) {
-            //    attributes
-            //}
-            var element = parentElement.ele('Test', {
+            var attributes = {
                 Name: this.name,
                 Framework: this.framework,
-                Line: this.position.line,
-                Column: this.position.column,
                 Id: this.id,
                 Browser: this.browser,
                 Time: this.time,
                 outcome: this.outcome !== undefined ? Outcome[this.outcome] : undefined
-            });
+            };
+
+            if (this.position) {
+                attributes.Line = this.position.line;
+                attributes.Column = this.position.column;
+            }
+
+            var element = parentElement.ele('Test', attributes);
             SourceToXml(element, this.originalPosition);
             this.log.forEach(function (line) {
                 element.ele('Log', line);

@@ -1,5 +1,6 @@
 ﻿import Javascript = require('./Javascript');
 import Util = require("./Util");
+import _ = require("lodash");
 
 var xmlbuilder = require('xmlbuilder');
 
@@ -22,6 +23,48 @@ module Test {
         }
 
         public toXml(parentElement): any { }
+    }
+
+    export class KarmaConfig extends Item {
+        constructor(public config: any) {
+            super();
+        }
+
+        public toXml(parentElement): any {
+            return this.valueToXml(parentElement, 'KarmaConfig', this.config);
+        }
+
+        private valueToXml(parentElement, name: string, value) {
+            if (value === null || value === undefined) {
+                return undefined;
+            } else if (_.isString(value) || _.isBoolean(value) || _.isDate(value) || _.isNumber(value)) {
+                return this.scalarToXml(parentElement, name, value);
+            } else if (_.isArray(value)) {
+                return this.arrayToXml(parentElement, name, value);
+            } else if (_.isObject(value)) {
+                return this.objectToXml(parentElement, name, value);
+            }
+        }
+
+        private objectToXml(parentElement, name: string, object) {
+            var element = parentElement.ele(name);
+            _.forIn(object, (value, property) => {
+                this.valueToXml(element, property, value);
+            });
+            return element;
+        }
+
+        private scalarToXml(parentElement, name: string, value) {
+            return parentElement.ele(name, value);
+        }
+
+        private arrayToXml(parentElement, name: string, value) {
+            var element = parentElement.ele(name);
+            _.forEach(value, item => {
+                this.valueToXml(element, 'item', item);
+            });
+            return element;
+        }
     }
 
     export class Results extends Item {
@@ -73,12 +116,17 @@ module Test {
         }
 
         public toXml(parentElement): any {
-            var element = parentElement.ele('Suite', {
+            var attributes: any = {
                 Name: this.name,
-                Framework: this.framework,
-                Line: this.position.line,
-                Column: this.position.column
-            });
+                Framework: this.framework
+            }
+
+            if (this.position) {
+                attributes.Line = this.position.line;
+                attributes.Column = this.position.column;
+            }
+
+            var element = parentElement.ele('Suite', attributes);
             SourceToXml(element, this.originalPosition);
             this.children.forEach(function (child) {
                 child.toXml(element);
@@ -102,24 +150,21 @@ module Test {
         }
 
         public toXml(parentElement): any {
-            //var attributes = {
-            //    Name: this.name
-            //};
-
-            //if (this.position) {
-            //    attributes
-            //}
-
-            var element = parentElement.ele('Test', {
+            var attributes: any = {
                 Name: this.name,
                 Framework: this.framework,
-                Line: this.position.line,
-                Column: this.position.column,
                 Id: this.id,
                 Browser: this.browser,
                 Time: this.time,
                 outcome: this.outcome !== undefined ? Outcome[this.outcome] : undefined
-            });
+            }
+
+            if (this.position) {
+                attributes.Line = this.position.line;
+                attributes.Column = this.position.column;
+            }
+
+            var element = parentElement.ele('Test', attributes);
             SourceToXml(element, this.originalPosition);
             this.log.forEach(function (line) {
                 element.ele('Log', line);

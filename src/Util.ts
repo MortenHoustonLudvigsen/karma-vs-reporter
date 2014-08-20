@@ -1,6 +1,5 @@
 ﻿import Javascript = require('./Javascript');
 import Test = require('./Test');
-import JasmineParser = require('./JasmineParser');
 
 import fs = require('fs');
 import path = require('path');
@@ -11,9 +10,10 @@ module Util {
         karmaConfigFile: string;
     }
 
-    export var configFile = path.resolve('KarmaVSReporter.json');
+    export var configFile = path.resolve('karma-vs-reporter.json');
     export var baseDir = process.cwd();
-    export var outputFile = process.argv[2] || 'KarmaVSReporter.xml';
+    export var outputFile = 'karma-vs-reporter.xml';
+    export var port;
     export var config = getConfig();
 
     function getConfig(): Config {
@@ -71,21 +71,7 @@ module Util {
     }
 
     export function createLogger(logger) {
-        return logger.create('KarmaVSReporter');
-    }
-
-    export function parseFiles(testResults: Test.Results, files, log) {
-        var jasmineParser = new JasmineParser();
-        files.served.forEach(function (file) {
-            try {
-                var testFile = new Test.File(file.path);
-                var jsFile = new Javascript.Program({ path: file.path, content: file.content });
-                jasmineParser.parse(jsFile, testFile);
-                testResults.add(testFile);
-            } catch (e) {
-                log.error(e);
-            }
-        });
+        return logger.create('karma-vs-reporter');
     }
 }
 
