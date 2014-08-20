@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TestResults>
+  <KarmaConfig>
+    <LOG_DISABLE>OFF</LOG_DISABLE>
+    <LOG_ERROR>ERROR</LOG_ERROR>
+    <LOG_WARN>WARN</LOG_WARN>
+    <LOG_INFO>INFO</LOG_INFO>
+    <LOG_DEBUG>DEBUG</LOG_DEBUG>
+    <set/>
+    <frameworks>
+      <item>jasmine</item>
+    </frameworks>
+    <port>9876</port>
+    <hostname>localhost</hostname>
+    <basePath>C:/Data/Projects/Spikes/KarmaTestAdapter/karma-vs-reporter/test</basePath>
+    <files>
+      <item>
+        <pattern>C:\Data\Projects\Spikes\KarmaTestAdapter\karma-vs-reporter\test\node_modules\karma-jasmine\lib/jasmine.js</pattern>
+        <included>true</included>
+        <served>true</served>
+        <watched>false</watched>
+      </item>
+      <item>
+        <pattern>C:\Data\Projects\Spikes\KarmaTestAdapter\karma-vs-reporter\test\node_modules\karma-jasmine\lib/adapter.js</pattern>
+        <included>true</included>
+        <served>true</served>
+        <watched>false</watched>
+      </item>
+      <item>
+        <pattern>C:/Data/Projects/Spikes/KarmaTestAdapter/karma-vs-reporter/test/testfiles/*.js</pattern>
+        <served>true</served>
+        <included>true</included>
+        <watched>true</watched>
+      </item>
+    </files>
+    <exclude>
+      <item>C:/Data/Projects/Spikes/KarmaTestAdapter/karma-vs-reporter/test/karma.conf.js</item>
+    </exclude>
+    <logLevel>INFO</logLevel>
+    <colors>true</colors>
+    <autoWatch>false</autoWatch>
+    <autoWatchBatchDelay>250</autoWatchBatchDelay>
+    <usePolling>false</usePolling>
+    <reporters>
+      <item>progress</item>
+      <item>vs</item>
+    </reporters>
+    <singleRun>true</singleRun>
+    <browsers>
+      <item>PhantomJS</item>
+    </browsers>
+    <captureTimeout>60000</captureTimeout>
+    <proxies/>
+    <proxyValidateSSL>true</proxyValidateSSL>
+    <preprocessors/>
+    <urlRoot>/</urlRoot>
+    <reportSlowerThan>0</reportSlowerThan>
+    <loggers>
+      <item>
+        <type>console</type>
+        <layout>
+          <type>pattern</type>
+          <pattern>%[%p [%c]: %]%m</pattern>
+        </layout>
+        <makers>
+          <console/>
+        </makers>
+      </item>
+    </loggers>
+    <transports>
+      <item>websocket</item>
+      <item>flashsocket</item>
+      <item>xhr-polling</item>
+      <item>jsonp-polling</item>
+    </transports>
+    <plugins>
+      <item>karma-*</item>
+    </plugins>
+    <client>
+      <args/>
+      <useIframe>true</useIframe>
+      <captureConsole>true</captureConsole>
+    </client>
+    <browserDisconnectTimeout>2000</browserDisconnectTimeout>
+    <browserDisconnectTolerance>0</browserDisconnectTolerance>
+    <browserNoActivityTimeout>10000</browserNoActivityTimeout>
+    <configFile>C:\Data\Projects\Spikes\KarmaTestAdapter\karma-vs-reporter\test\karma.conf.js</configFile>
+    <vsReporter>
+      <outputFile>karma-vs-reporter.xml</outputFile>
+    </vsReporter>
+  </KarmaConfig>
+  <File Path="node_modules/karma-jasmine\lib\jasmine.js"/>
+  <File Path="node_modules/karma-jasmine\lib\adapter.js"/>
+  <File Path="testfiles/Testfile1.js">
+    <Suite Name="Simple tests" Framework="jasmine" Line="1" Column="1">
+      <Source Path="testfiles/Testfile1.ts" Line="1" Column="0"/>
+      <Test Name="should be, that 1 + 1 = 2" Framework="jasmine" Line="2" Column="4">
+        <Source Path="testfiles/Testfile1.ts" Line="2" Column="4"/>
+      </Test>
+    </Suite>
+  </File>
+  <Suite Name="Simple tests">
+    <Test Name="should be, that 1 + 1 = 2" Id="0" Browser="PhantomJS 1.9.7 (Windows 8)" Time="5" outcome="Success"/>
+  </Suite>
+</TestResults>
