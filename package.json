@@ -1,0 +1,30 @@
+{
+  "name": "karma-vs-reporter",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ast-traverse": "^0.1.1",
+    "esprima": "^1.2.2",
+    "glob": "^4.0.5",
+    "q": "^1.0.1",
+    "source-map": "^0.1.38",
+    "xmlbuilder": "^2.4.3",
+    "lodash": "^2.4.1",
+    "extend": "^1.3.0"
+  },
+  "peerDependencies": {
+    "karma": "~0.12.21"
+  },
+  "devDependencies": {
+    "jasmine-node": "^1.14.5",
+    "karma": "~0.12.21",
+    "karma-jasmine": "^0.1.5",
+    "karma-phantomjs-launcher": "^0.1.4"
+  }
+}
