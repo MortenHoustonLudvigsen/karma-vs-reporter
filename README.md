@@ -2,6 +2,8 @@
 
 > Report results in xml format for a Visual Studio test explorer adapter.
 
+Parses test files to find file and position of each test.
+
 ## Installation
 
 ```bash

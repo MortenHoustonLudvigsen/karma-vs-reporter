@@ -32,7 +32,7 @@ var Util;
             }
             filepath = path.resolve(relativeTo, filepath);
         }
-        return path.relative(Util.baseDir, filepath).replace('\\', '/');
+        return path.relative(Util.baseDir, filepath).replace(/\\/g, '/');
     }
     Util.resolvePath = resolvePath;
 

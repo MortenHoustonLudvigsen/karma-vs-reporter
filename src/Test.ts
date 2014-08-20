@@ -178,7 +178,11 @@ module Test {
 
     function SourceToXml(parentElement, source: Javascript.MappedPosition): any {
         if (source) {
-            return parentElement.ele('Source', { Path: source.source, Line: source.line, Column: source.column });
+            return parentElement.ele('Source', {
+                Path: source.source,
+                Line: source.line,
+                Column: source.column
+            });
         }
     }
 }

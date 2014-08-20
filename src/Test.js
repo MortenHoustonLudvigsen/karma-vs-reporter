@@ -186,7 +186,11 @@ var Test;
 
     function SourceToXml(parentElement, source) {
         if (source) {
-            return parentElement.ele('Source', { Path: source.source, Line: source.line, Column: source.column });
+            return parentElement.ele('Source', {
+                Path: source.source,
+                Line: source.line,
+                Column: source.column
+            });
         }
     }
 })(Test || (Test = {}));
