@@ -5,6 +5,12 @@ import _ = require("lodash");
 var xmlbuilder = require('xmlbuilder');
 
 module Test {
+    //function lazy<T>(init: () => T): T {
+    //    var fn = function () {
+    //        var 
+    //    }
+    //}
+
     export enum Outcome {
         Success,
         Skipped,
@@ -25,13 +31,51 @@ module Test {
         public toXml(parentElement): any { }
     }
 
+    export class Karma extends Item {
+        constructor() {
+            super();
+        }
+
+        public toXml(parentElement?): any {
+            var element = xmlbuilder.create('Karma',
+                { version: '1.0', encoding: 'UTF-8', standalone: true },
+                { pubID: null, sysID: null },
+                {
+                    allowSurrogateChars: false, skipNullAttributes: true,
+                    headless: false, ignoreDecorators: false, stringify: {}
+                }
+                );
+
+            this.children.forEach(function (child) {
+                child.toXml(element);
+            });
+            return element.end({ pretty: true });
+        }
+
+        public files(): Item {
+            var files = this.add(new Container('Files'));
+            this.files = function () {
+                return files;
+            };
+            return this.files();
+        }
+
+        public results(): Item {
+            var results = this.add(new Container('Results'));
+            this.results = function () {
+                return results;
+            };
+            return this.results();
+        }
+    }
+
     export class KarmaConfig extends Item {
         constructor(public config: any) {
             super();
         }
 
         public toXml(parentElement): any {
-            return this.valueToXml(parentElement, 'KarmaConfig', this.config);
+            return this.valueToXml(parentElement, 'Config', this.config);
         }
 
         private valueToXml(parentElement, name: string, value) {
@@ -75,25 +119,19 @@ module Test {
         }
     }
 
-    export class Results extends Item {
-        constructor() {
+    export class Container extends Item {
+        constructor(private name: string) {
             super();
         }
 
-        public toXml(parentElement?): any {
-            var element = xmlbuilder.create('TestResults',
-                { version: '1.0', encoding: 'UTF-8', standalone: true },
-                { pubID: null, sysID: null },
-                {
-                    allowSurrogateChars: false, skipNullAttributes: true,
-                    headless: false, ignoreDecorators: false, stringify: {}
-                }
-                );
-
-            this.children.forEach(function (child) {
-                child.toXml(element);
-            });
-            return element.end({ pretty: true });
+        public toXml(parentElement): any {
+            if (this.children.length > 0) {
+                var element = parentElement.ele(this.name);
+                this.children.forEach(function (child) {
+                    child.toXml(element);
+                });
+                return element;
+            }
         }
     }
 

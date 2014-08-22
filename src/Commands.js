@@ -43,15 +43,15 @@ var Commands;
 
         var discoverTests;
         discoverTests = function (fileList, logger) {
-            var results = new Test.Results();
+            var karma = new Test.Karma();
 
-            results.add(new Test.KarmaConfig(config));
+            karma.add(new Test.KarmaConfig(config));
 
             fileList.refresh().then(function (files) {
                 try  {
-                    parseFiles(results, files, log);
-                    var xml = results.toXml();
-                    Util.writeFile(outputFile, results.toXml());
+                    parseFiles(karma, files, log);
+                    var xml = karma.toXml();
+                    Util.writeFile(outputFile, karma.toXml());
                 } catch (e) {
                     log.error(e);
                 }

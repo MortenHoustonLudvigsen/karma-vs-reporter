@@ -11,6 +11,11 @@ var xmlbuilder = require('xmlbuilder');
 
 var Test;
 (function (_Test) {
+    //function lazy<T>(init: () => T): T {
+    //    var fn = function () {
+    //        var
+    //    }
+    //}
     (function (Outcome) {
         Outcome[Outcome["Success"] = 0] = "Success";
         Outcome[Outcome["Skipped"] = 1] = "Skipped";
@@ -33,6 +38,42 @@ var Test;
     })();
     _Test.Item = Item;
 
+    var Karma = (function (_super) {
+        __extends(Karma, _super);
+        function Karma() {
+            _super.call(this);
+        }
+        Karma.prototype.toXml = function (parentElement) {
+            var element = xmlbuilder.create('Karma', { version: '1.0', encoding: 'UTF-8', standalone: true }, { pubID: null, sysID: null }, {
+                allowSurrogateChars: false, skipNullAttributes: true,
+                headless: false, ignoreDecorators: false, stringify: {}
+            });
+
+            this.children.forEach(function (child) {
+                child.toXml(element);
+            });
+            return element.end({ pretty: true });
+        };
+
+        Karma.prototype.files = function () {
+            var files = this.add(new Container('Files'));
+            this.files = function () {
+                return files;
+            };
+            return this.files();
+        };
+
+        Karma.prototype.results = function () {
+            var results = this.add(new Container('Results'));
+            this.results = function () {
+                return results;
+            };
+            return this.results();
+        };
+        return Karma;
+    })(Item);
+    _Test.Karma = Karma;
+
     var KarmaConfig = (function (_super) {
         __extends(KarmaConfig, _super);
         function KarmaConfig(config) {
@@ -40,7 +81,7 @@ var Test;
             this.config = config;
         }
         KarmaConfig.prototype.toXml = function (parentElement) {
-            return this.valueToXml(parentElement, 'KarmaConfig', this.config);
+            return this.valueToXml(parentElement, 'Config', this.config);
         };
 
         KarmaConfig.prototype.valueToXml = function (parentElement, name, value) {
@@ -88,25 +129,24 @@ var Test;
     })(Item);
     _Test.KarmaConfig = KarmaConfig;
 
-    var Results = (function (_super) {
-        __extends(Results, _super);
-        function Results() {
+    var Container = (function (_super) {
+        __extends(Container, _super);
+        function Container(name) {
             _super.call(this);
+            this.name = name;
         }
-        Results.prototype.toXml = function (parentElement) {
-            var element = xmlbuilder.create('TestResults', { version: '1.0', encoding: 'UTF-8', standalone: true }, { pubID: null, sysID: null }, {
-                allowSurrogateChars: false, skipNullAttributes: true,
-                headless: false, ignoreDecorators: false, stringify: {}
-            });
-
-            this.children.forEach(function (child) {
-                child.toXml(element);
-            });
-            return element.end({ pretty: true });
+        Container.prototype.toXml = function (parentElement) {
+            if (this.children.length > 0) {
+                var element = parentElement.ele(this.name);
+                this.children.forEach(function (child) {
+                    child.toXml(element);
+                });
+                return element;
+            }
         };
-        return Results;
+        return Container;
     })(Item);
-    _Test.Results = Results;
+    _Test.Container = Container;
 
     var File = (function (_super) {
         __extends(File, _super);
