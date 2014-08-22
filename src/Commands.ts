@@ -71,6 +71,7 @@ module Commands {
             configFile: path.resolve(Util.config.karmaConfigFile),
             reporters: ['progress', 'vs'],
             singleRun: true,
+            colors: false,
             vsReporter: {
                 outputFile: outputFile
             }
