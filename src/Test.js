@@ -201,16 +201,11 @@ var Test;
         function Test(name) {
             _super.call(this);
             this.name = name;
-            this.log = [];
         }
         Test.prototype.toXml = function (parentElement) {
             var attributes = {
                 Name: this.name,
-                Framework: this.framework,
-                Id: this.id,
-                Browser: this.browser,
-                Time: this.time,
-                Outcome: this.outcome !== undefined ? Outcome[this.outcome] : undefined
+                Framework: this.framework
             };
 
             if (this.position) {
@@ -220,17 +215,57 @@ var Test;
 
             var element = parentElement.ele('Test', attributes);
             SourceToXml(element, this.originalPosition);
-            this.log.forEach(function (line) {
-                element.ele('Log', line);
-            });
-            this.children.forEach(function (child) {
-                child.toXml(element);
-            });
             return element;
         };
         return Test;
     })(Item);
     _Test.Test = Test;
+
+    var SuiteResult = (function (_super) {
+        __extends(SuiteResult, _super);
+        function SuiteResult(name) {
+            _super.call(this);
+            this.name = name;
+        }
+        SuiteResult.prototype.toXml = function (parentElement) {
+            var attributes = {
+                Name: this.name
+            };
+            var element = parentElement.ele('SuiteResult', attributes);
+            this.children.forEach(function (child) {
+                child.toXml(element);
+            });
+            return element;
+        };
+        return SuiteResult;
+    })(Item);
+    _Test.SuiteResult = SuiteResult;
+
+    var TestResult = (function (_super) {
+        __extends(TestResult, _super);
+        function TestResult(name) {
+            _super.call(this);
+            this.name = name;
+            this.log = [];
+        }
+        TestResult.prototype.toXml = function (parentElement) {
+            var attributes = {
+                Name: this.name,
+                Id: this.id,
+                Browser: this.browser,
+                Time: this.time,
+                Outcome: this.outcome !== undefined ? Outcome[this.outcome] : undefined
+            };
+
+            var element = parentElement.ele('TestResult', attributes);
+            this.log.forEach(function (line) {
+                element.ele('Log', line);
+            });
+            return element;
+        };
+        return TestResult;
+    })(Item);
+    _Test.TestResult = TestResult;
 
     function SourceToXml(parentElement, source) {
         if (source) {

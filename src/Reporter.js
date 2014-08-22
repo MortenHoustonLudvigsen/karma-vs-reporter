@@ -48,9 +48,9 @@ Reporter = function Reporter(baseReporterDecorator, config, fileList, helper, lo
             results.forEach(function (res) {
                 var parent = karma.results();
                 res.result.suite.forEach(function (s) {
-                    parent = parent.add(new Test.Suite(s));
+                    parent = parent.add(new Test.SuiteResult(s));
                 });
-                var test = new Test.Test(res.result.description);
+                var test = new Test.TestResult(res.result.description);
                 test.id = res.result.id;
                 test.browser = res.browser.name;
                 test.time = res.result.time;

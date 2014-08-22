@@ -185,6 +185,46 @@ module Test {
         public framework: string;
         public position: Javascript.Position;
         public originalPosition: Javascript.MappedPosition;
+
+        constructor(public name: string) {
+            super();
+        }
+
+        public toXml(parentElement): any {
+            var attributes: any = {
+                Name: this.name,
+                Framework: this.framework
+            }
+
+            if (this.position) {
+                attributes.Line = this.position.line;
+                attributes.Column = this.position.column;
+            }
+
+            var element = parentElement.ele('Test', attributes);
+            SourceToXml(element, this.originalPosition);
+            return element;
+        }
+    }
+
+    export class SuiteResult extends Item {
+        constructor(public name: string) {
+            super();
+        }
+
+        public toXml(parentElement): any {
+            var attributes: any = {
+                Name: this.name
+            }
+            var element = parentElement.ele('SuiteResult', attributes);
+            this.children.forEach(function (child) {
+                child.toXml(element);
+            });
+            return element;
+        }
+    }
+
+    export class TestResult extends Item {
         public id: string;
         public browser: string;
         public time: number;
@@ -198,25 +238,15 @@ module Test {
         public toXml(parentElement): any {
             var attributes: any = {
                 Name: this.name,
-                Framework: this.framework,
                 Id: this.id,
                 Browser: this.browser,
                 Time: this.time,
                 Outcome: this.outcome !== undefined ? Outcome[this.outcome] : undefined
             }
 
-            if (this.position) {
-                attributes.Line = this.position.line;
-                attributes.Column = this.position.column;
-            }
-
-            var element = parentElement.ele('Test', attributes);
-            SourceToXml(element, this.originalPosition);
+            var element = parentElement.ele('TestResult', attributes);
             this.log.forEach(function (line) {
                 element.ele('Log', line);
-            });
-            this.children.forEach(function (child) {
-                child.toXml(element);
             });
             return element;
         }
