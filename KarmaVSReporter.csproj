@@ -71,11 +71,17 @@
     <Content Include="test\testfiles\Testfile1.js">
       <DependentUpon>Testfile1.ts</DependentUpon>
     </Content>
+    <Content Include="test\testfiles\TestFile2.js">
+      <DependentUpon>TestFile2.ts</DependentUpon>
+    </Content>
     <Content Include="test\testfiles\tsd.json" />
     <Content Include="test\package.json" />
     <Content Include="test\init.cmd" />
     <Content Include="test\testfiles\Testfile1.js.map">
       <DependentUpon>Testfile1.ts</DependentUpon>
+    </Content>
+    <Content Include="test\testfiles\TestFile2.js.map">
+      <DependentUpon>TestFile2.ts</DependentUpon>
     </Content>
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +135,7 @@
     <TypeScriptCompile Include="src\Util.ts" />
     <TypeScriptCompile Include="test\testfiles\references.d.ts" />
     <TypeScriptCompile Include="test\testfiles\Testfile1.ts" />
+    <TypeScriptCompile Include="test\testfiles\TestFile2.ts" />
     <TypeScriptCompile Include="test\testfiles\typings\jasmine\jasmine.d.ts" />
     <TypeScriptCompile Include="test\testfiles\typings\tsd.d.ts" />
     <TypeScriptCompile Include="typings\ast-traverse\ast-traverse.d.ts" />
