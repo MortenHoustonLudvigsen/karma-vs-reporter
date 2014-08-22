@@ -29,6 +29,7 @@ var Test;
         }
         Item.prototype.add = function (item) {
             this.children.push(item);
+            item.parent = this;
             return item;
         };
 
@@ -221,12 +222,86 @@ var Test;
     })(Item);
     _Test.Test = Test;
 
+    var ResultContainer = (function (_super) {
+        __extends(ResultContainer, _super);
+        function ResultContainer() {
+            _super.call(this);
+        }
+        ResultContainer.prototype.parentResultContainer = function () {
+            return this.parent;
+        };
+
+        ResultContainer.prototype.isSuite = function (suite) {
+            return false;
+        };
+
+        ResultContainer.prototype.getSuites = function () {
+            return [];
+        };
+        return ResultContainer;
+    })(Item);
+    _Test.ResultContainer = ResultContainer;
+
+    var Browser = (function (_super) {
+        __extends(Browser, _super);
+        function Browser(name) {
+            _super.call(this);
+            this.name = name;
+            this._currentSuite = this;
+        }
+        Browser.prototype.startSuite = function (suite) {
+            var currentSuites = this._currentSuite.getSuites();
+            var currentSuite = this;
+            var match = true;
+
+            suite.forEach(function (s) {
+                if (match) {
+                    var c = currentSuites.shift();
+                    if (c && s === c.name) {
+                        currentSuite = c;
+                    } else {
+                        match = false;
+                        currentSuite = currentSuite.add(new SuiteResult(s));
+                    }
+                } else {
+                    currentSuite = currentSuite.add(new SuiteResult(s));
+                }
+            });
+
+            this._currentSuite = currentSuite;
+            return currentSuite;
+        };
+
+        Browser.prototype.toXml = function (parentElement) {
+            var attributes = {
+                Name: this.name
+            };
+            var element = parentElement.ele('Browser', attributes);
+            this.children.forEach(function (child) {
+                child.toXml(element);
+            });
+            return element;
+        };
+        return Browser;
+    })(ResultContainer);
+    _Test.Browser = Browser;
+
     var SuiteResult = (function (_super) {
         __extends(SuiteResult, _super);
         function SuiteResult(name) {
             _super.call(this);
             this.name = name;
         }
+        SuiteResult.prototype.getSuites = function () {
+            var result = this.parentResultContainer().getSuites();
+            result.push(this);
+            return result;
+        };
+
+        SuiteResult.prototype.isSuite = function (suite) {
+            return suite === this.name;
+        };
+
         SuiteResult.prototype.toXml = function (parentElement) {
             var attributes = {
                 Name: this.name
@@ -238,7 +313,7 @@ var Test;
             return element;
         };
         return SuiteResult;
-    })(Item);
+    })(ResultContainer);
     _Test.SuiteResult = SuiteResult;
 
     var TestResult = (function (_super) {
@@ -252,7 +327,6 @@ var Test;
             var attributes = {
                 Name: this.name,
                 Id: this.id,
-                Browser: this.browser,
                 Time: this.time,
                 Outcome: this.outcome !== undefined ? Outcome[this.outcome] : undefined
             };

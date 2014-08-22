@@ -18,13 +18,15 @@ module Test {
     }
 
     export class Item {
+        public parent: Item;
         public children: Array<Item> = [];
 
         constructor() {
         }
 
-        public add(item: Item): Item {
+        public add<T extends Item>(item: T): T {
             this.children.push(item);
+            item.parent = this;
             return item;
         }
 
@@ -207,9 +209,79 @@ module Test {
         }
     }
 
-    export class SuiteResult extends Item {
+    export class ResultContainer extends Item {
+        constructor() {
+            super();
+        }
+
+        public parentResultContainer(): ResultContainer {
+            return <ResultContainer>this.parent;
+        }
+
+        public isSuite(suite: string): boolean {
+            return false;
+        }
+
+        public getSuites(): SuiteResult[] {
+            return [];
+        }
+    }
+
+    export class Browser extends ResultContainer {
+        private _currentSuite: ResultContainer;
         constructor(public name: string) {
             super();
+            this._currentSuite = this;
+        }
+
+        public startSuite(suite: string[]): ResultContainer {
+            var currentSuites = this._currentSuite.getSuites();
+            var currentSuite: ResultContainer = this;
+            var match = true;
+
+            suite.forEach(s => {
+                if (match) {
+                    var c = currentSuites.shift();
+                    if (c && s === c.name) {
+                        currentSuite = c;
+                    } else {
+                        match = false;
+                        currentSuite = currentSuite.add(new SuiteResult(s));
+                    }
+                } else {
+                    currentSuite = currentSuite.add(new SuiteResult(s));
+                }
+            });
+
+            this._currentSuite = currentSuite;
+            return currentSuite;
+        }
+
+        public toXml(parentElement): any {
+            var attributes: any = {
+                Name: this.name
+            }
+            var element = parentElement.ele('Browser', attributes);
+            this.children.forEach(function (child) {
+                child.toXml(element);
+            });
+            return element;
+        }
+    }
+
+    export class SuiteResult extends ResultContainer {
+        constructor(public name: string) {
+            super();
+        }
+
+        public getSuites(): SuiteResult[] {
+            var result = this.parentResultContainer().getSuites();
+            result.push(this);
+            return result;
+        }
+
+        public isSuite(suite: string): boolean {
+            return suite === this.name;
         }
 
         public toXml(parentElement): any {
@@ -226,7 +298,6 @@ module Test {
 
     export class TestResult extends Item {
         public id: string;
-        public browser: string;
         public time: number;
         public outcome: Outcome;
         public log: Array<string> = [];
@@ -239,7 +310,6 @@ module Test {
             var attributes: any = {
                 Name: this.name,
                 Id: this.id,
-                Browser: this.browser,
                 Time: this.time,
                 Outcome: this.outcome !== undefined ? Outcome[this.outcome] : undefined
             }

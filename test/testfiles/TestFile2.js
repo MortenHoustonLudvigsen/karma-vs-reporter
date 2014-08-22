@@ -5,6 +5,11 @@
     xit('should be skipped', function () {
         expect(true).toBe(false);
     });
+    describe('Nested tests', function () {
+        it('should be, that 3 + 12 = 23', function () {
+            expect(3 + 12).toBe(23);
+        });
+    });
     it('should be, that 3 + 12 = 23', function () {
         expect(3 + 12).toBe(23);
     });

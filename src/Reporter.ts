@@ -5,6 +5,7 @@ import q = require('q');
 import path = require('path');
 import fs = require('fs');
 import parseFiles = require('./ParseFiles');
+import _ = require("lodash");
 
 var Reporter;
 Reporter = function Reporter(baseReporterDecorator, config, fileList, helper, logger, formatError, emitter) {
@@ -19,13 +20,13 @@ Reporter = function Reporter(baseReporterDecorator, config, fileList, helper, lo
     });
 
     var filesParsed;
-    var results;
+    var browserResults;
     var karma: Test.Karma;
 
     this.onRunStart = function () {
         karma = new Test.Karma();
         karma.add(new Test.KarmaConfig(config));
-        results = [];
+        browserResults = {};
         filesParsed = q.defer();
         filesPromise.then(function (files) {
             parseFiles(karma, files, log);
@@ -40,30 +41,57 @@ Reporter = function Reporter(baseReporterDecorator, config, fileList, helper, lo
     };
 
     this.onSpecComplete = function (browser, result) {
-        results.push({ browser: browser, result: result });
+        browserResults[browser.name] = browserResults[browser.name] || {
+            browser: browser,
+            results: []
+        };
+
+        browserResults[browser.name].results.push(result);
     };
 
     this.onRunComplete = function () {
         filesParsed.promise.then(function () {
-            results.forEach(function (res) {
-                var parent: Test.Item = karma.results();
-                res.result.suite.forEach(function (s) {
-                    parent = parent.add(new Test.SuiteResult(s));
-                });
-                var test = new Test.TestResult(res.result.description);
-                test.id = res.result.id;
-                test.browser = res.browser.name;
-                test.time = res.result.time;
-                test.outcome = getOutcome(res.result);
+            _.forIn(browserResults, browserResult => {
+                var browser = karma.results().add(new Test.Browser(browserResult.browser.name));
 
-                res.result.log.forEach(function (line) {
-                    test.log.push(formatError(line).replace(/\s+$/, ''));
-                });
+                browserResult.results.forEach(result => {
+                    var suite = browser.startSuite(result.suite);
+                    var testResult = suite.add(new Test.TestResult(result.description));
+                    testResult.id = result.id;
+                    testResult.time = result.time;
+                    testResult.outcome = getOutcome(result);
 
-                parent.add(test);
+                    result.log.forEach(function (logItem) {
+                        testResult.log.push(formatError(logItem).replace(/\s+$/, ''));
+                    });
+                });
             });
 
-            Util.writeFile(outputFile, karma.toXml());
+
+
+            //browserResults.forEach(function (res) {
+            //    var parent: Test.Item = karma.results();
+            //    res.result.suite.forEach(function (s) {
+            //        parent = parent.add(new Test.SuiteResult(s));
+            //    });
+            //    var test = new Test.TestResult(res.result.description);
+            //    test.id = res.result.id;
+            //    test.browser = res.browser.name;
+            //    test.time = res.result.time;
+            //    test.outcome = getOutcome(res.result);
+
+            //    res.result.log.forEach(function (line) {
+            //        test.log.push(formatError(line).replace(/\s+$/, ''));
+            //    });
+
+            //    parent.add(test);
+            //});
+
+            try {
+                Util.writeFile(outputFile, karma.toXml());
+            } catch (e) {
+                log.error(e);
+            }
         });
     };
 
