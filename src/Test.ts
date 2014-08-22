@@ -202,7 +202,7 @@ module Test {
                 Id: this.id,
                 Browser: this.browser,
                 Time: this.time,
-                outcome: this.outcome !== undefined ? Outcome[this.outcome] : undefined
+                Outcome: this.outcome !== undefined ? Outcome[this.outcome] : undefined
             }
 
             if (this.position) {
