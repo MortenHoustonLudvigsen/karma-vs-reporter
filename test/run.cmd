@@ -4,5 +4,5 @@ cd /d %~dp0
 
 call init.cmd
 del *.xml
-call node_modules\.bin\karma-vs-reporter run
-dir /b karma-vs-reporter.xml
+call node_modules\.bin\karma-vs-reporter run -o testrun.xml
+dir /b *.xml

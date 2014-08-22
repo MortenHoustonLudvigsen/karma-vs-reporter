@@ -12,7 +12,7 @@ Reporter = function Reporter(baseReporterDecorator, config, fileList, helper, lo
     baseReporterDecorator(this);
 
     var log = Util.createLogger(logger);
-    var outputFile = helper.normalizeWinPath(path.resolve(config.basePath, Util.outputFile));
+    var outputFile = config.vsReporter.outputFile || helper.normalizeWinPath(path.resolve(config.basePath, Util.outputFile));
     var filesPromise = fileList.refresh();
 
     emitter.on('file_list_modified', function (emittedFilesPromise) {
