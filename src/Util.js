@@ -7,7 +7,6 @@ var Util;
     Util.configFile = path.resolve('karma-vs-reporter.json');
     Util.baseDir = process.cwd();
     Util.outputFile = 'karma-vs-reporter.xml';
-    Util.port;
     Util.config = getConfig();
 
     function getConfig() {

@@ -79,8 +79,8 @@ var Commands;
             }
         };
 
-        if (Util.port) {
-            config.port = Util.port;
+        if (port) {
+            config.port = port;
         }
 
         server.start(config, function (exitCode) {
