@@ -1,18 +1,13 @@
-﻿# karma-vs-reporter
+karma-vs-reporter
+================
 
-> Report results in xml format for a Visual Studio test explorer adapter.
+Report results in xml format for the [Karma Visual Studio test explorer adapter](https://github.com/MortenHoustonLudvigsen/KarmaTestAdapter).
 
-Parses test files to find file and position of each test.
-
-## Installation
+# Installation
 
 ```bash
 npm install karma-vs-reporter --save-dev
 ```
 
-----
-
-For more information on Karma see the [homepage].
-
-
-[homepage]: http://karma-runner.github.com
+# Features
+See [Karma Visual Studio test explorer adapter](https://github.com/MortenHoustonLudvigsen/KarmaTestAdapter).
