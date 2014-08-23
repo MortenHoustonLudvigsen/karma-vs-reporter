@@ -1,25 +1,28 @@
 ﻿var fs = require('fs');
 var path = require('path');
 var extend = require('extend');
+var stripBom = require('strip-bom');
 
 var Util;
 (function (Util) {
     Util.configFile = path.resolve('karma-vs-reporter.json');
     Util.baseDir = process.cwd();
     Util.outputFile = 'karma-vs-reporter.xml';
-    Util.config = getConfig();
+    Util.config = readConfigFile(Util.configFile);
 
-    function getConfig() {
+    function readConfigFile(configFile) {
         var config = extend({
-            karmaConfigFile: 'karma.conf.js'
+            karmaConfigFile: 'karma.conf.js',
+            config: {}
         }, Try(function () {
-            return readJsonFile(Util.configFile);
+            return readJsonFile(configFile);
         }));
         return config;
     }
+    Util.readConfigFile = readConfigFile;
 
-    function writeConfigFile() {
-        writeFile(Util.configFile, JSON.stringify(Util.config, null, 4));
+    function writeConfigFile(configFile) {
+        writeFile(configFile, JSON.stringify(Util.config, null, 4));
     }
     Util.writeConfigFile = writeConfigFile;
 
@@ -41,7 +44,7 @@ var Util;
     Util.absolutePath = absolutePath;
 
     function readFile(filepath, relativeTo) {
-        return fs.readFileSync(absolutePath(filepath, relativeTo), 'utf8');
+        return stripBom(fs.readFileSync(absolutePath(filepath, relativeTo), 'utf8'));
     }
     Util.readFile = readFile;
 

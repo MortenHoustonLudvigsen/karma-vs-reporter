@@ -1,0 +1,9 @@
+﻿{
+    "karmaConfigFile": "karma.test.conf.js",
+    "config": {
+        "browsers": [
+            "Chrome",
+            "PhantomJS"
+        ]
+    }
+}

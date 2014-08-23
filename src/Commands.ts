@@ -5,37 +5,49 @@ import Test = require('./Test');
 import JasmineParser = require('./JasmineParser');
 import path = require('path');
 import parseFiles = require('./ParseFiles');
+import _ = require('lodash');
+var extend = require('extend');
 
 module Commands {
-    export function init() {
-        Util.writeConfigFile();
+    export function init(configFile) {
+        Util.writeConfigFile(configFile);
     }
 
-    export function discover(outputFile: string) {
+    export function discover(config: Util.Config, outputFile: string) {
         var di = require('karma/node_modules/di');
         var cfg = require('karma/lib/config');
         var logger = require("karma/lib/logger");
         var preprocessor = require('karma/lib/preprocessor');
         var fileList = require('karma/lib/file_list').List;
         var emitter = require('karma/lib/events').EventEmitter;
+        var karmaConfigFile = path.resolve(config.karmaConfigFile);
 
         // Config
-        logger.setup('OFF', false);
+        logger.setup('INFO', false);
         var log = Util.createLogger(logger);
-        var config = cfg.parseConfig(path.resolve(Util.config.karmaConfigFile), {
+
+        var karmaConfig: any = {
             singleRun: true,
             browsers: [
-                'PhantomJS'
+                //'PhantomJS'
             ],
-            reporters: ['dots'],
-            colors: true,
+            reporters: [
+                //'dots'
+            ],
+            colors: false,
             logLevel: 'INFO'
-        });
+        };
+
+        if (_.isObject(config.config)) {
+            karmaConfig = extend(karmaConfig, config.config);
+        }
+
+        karmaConfig = cfg.parseConfig(karmaConfigFile, karmaConfig);
 
         var modules = [{
             logger: ['value', logger],
             emitter: ['type', emitter],
-            config: ['value', config],
+            config: ['value', karmaConfig],
             preprocess: ['factory', preprocessor.createPreprocessor],
             fileList: ['type', fileList]
         }];
@@ -44,7 +56,7 @@ module Commands {
         discoverTests = function (fileList, logger) {
             var karma = new Test.Karma();
 
-            karma.add(new Test.KarmaConfig(config));
+            karma.add(new Test.KarmaConfig(karmaConfig));
 
             fileList.refresh().then(function (files) {
                 try {
@@ -65,23 +77,28 @@ module Commands {
         }
     }
 
-    export function run(outputFile: string, port?) {
+    export function run(config: Util.Config, outputFile: string, port?) {
         var server = require('karma').server;
-        var config: any = {
-            configFile: path.resolve(Util.config.karmaConfigFile),
+        var karmaConfig: any = {
+            configFile: path.resolve(config.karmaConfigFile),
             reporters: ['progress', 'vs'],
             singleRun: true,
-            colors: false,
-            vsReporter: {
-                outputFile: outputFile
-            }
+            colors: false
+        };
+
+        if (_.isObject(config.config)) {
+            karmaConfig = extend(karmaConfig, config.config);
+        }
+
+        karmaConfig.vsReporter = {
+            outputFile: outputFile
         };
 
         if (port) {
-            config.port = port;
+            karmaConfig.port = port;
         }
 
-        server.start(config, function (exitCode) {
+        server.start(karmaConfig, function (exitCode) {
             process.exit(exitCode);
         });
     }

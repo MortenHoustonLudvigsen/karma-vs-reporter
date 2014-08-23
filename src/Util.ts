@@ -4,25 +4,28 @@ import Test = require('./Test');
 import fs = require('fs');
 import path = require('path');
 var extend = require('extend');
+var stripBom = require('strip-bom');
 
 module Util {
     export interface Config {
         karmaConfigFile: string;
+        config: any;
     }
 
     export var configFile = path.resolve('karma-vs-reporter.json');
     export var baseDir = process.cwd();
     export var outputFile = 'karma-vs-reporter.xml';
-    export var config = getConfig();
+    export var config = readConfigFile(configFile);
 
-    function getConfig(): Config {
+    export function readConfigFile(configFile): Config {
         var config: Config = extend({
-            karmaConfigFile: 'karma.conf.js'
+            karmaConfigFile: 'karma.conf.js',
+            config: {}
         }, Try(() => readJsonFile(configFile)));
         return config;
     }
 
-    export function writeConfigFile() {
+    export function writeConfigFile(configFile) {
         writeFile(configFile, JSON.stringify(config, null, 4));
     }
 
@@ -42,7 +45,7 @@ module Util {
     }
 
     export function readFile(filepath: string, relativeTo?: string) {
-        return fs.readFileSync(absolutePath(filepath, relativeTo), 'utf8');
+        return stripBom(fs.readFileSync(absolutePath(filepath, relativeTo), 'utf8'));
     }
 
     export function readJsonFile(filepath: string, relativeTo?: string) {

@@ -64,9 +64,10 @@
     <Content Include="src\ParseFiles.js.map">
       <DependentUpon>ParseFiles.ts</DependentUpon>
     </Content>
-    <Content Include="test\karma.conf.js" />
+    <Content Include="test\karma.test.conf.js" />
     <Content Include="test\discover.cmd" />
     <Content Include="README.md" />
+    <Content Include="test\karma-vs-reporter.test.json" />
     <None Include="test\run.cmd" />
     <Content Include="test\testfiles\Testfile1.js">
       <DependentUpon>Testfile1.ts</DependentUpon>
