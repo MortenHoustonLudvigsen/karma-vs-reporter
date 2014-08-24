@@ -82,7 +82,8 @@ var Commands;
     Commands.discover = discover;
 
     function run(config, outputFile, vsConfig, port) {
-        var karmaConfig = extend(getKarmaConfig(config), {
+        var origConfig = getKarmaConfig(config);
+        var karmaConfig = {
             configFile: path.resolve(config.karmaConfigFile),
             reporters: ['progress', 'vs'],
             singleRun: true,
@@ -91,7 +92,7 @@ var Commands;
                 outputFile: outputFile,
                 vsConfig: vsConfig
             }
-        });
+        };
 
         if (_.isObject(config.config)) {
             karmaConfig = extend(karmaConfig, config.config);
@@ -107,6 +108,7 @@ var Commands;
                 };
             });
 
+            karmaConfig.preprocessors = origConfig.preprocessors || {};
             vsConfig.files.filter(function (f) {
                 return f.hasTests();
             }).forEach(function (f) {

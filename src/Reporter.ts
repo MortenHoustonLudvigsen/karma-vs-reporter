@@ -6,6 +6,7 @@ import path = require('path');
 import fs = require('fs');
 import parseFiles = require('./ParseFiles');
 import _ = require("lodash");
+import util = require('util');
 
 var Reporter: any = function Reporter(baseReporterDecorator, config, fileList, helper, logger, formatError, emitter) {
     baseReporterDecorator(this);

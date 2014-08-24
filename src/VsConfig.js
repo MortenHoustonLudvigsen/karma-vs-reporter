@@ -78,7 +78,7 @@ var VsConfig;
 
     function load(file) {
         return new Config(file ? Util.Try(function () {
-            return Util.readJsonFile(file);
+            return Util.readJsonFile(Util.resolvePath(file));
         }) || {} : {});
     }
     VsConfig.load = load;

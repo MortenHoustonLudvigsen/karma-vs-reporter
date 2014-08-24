@@ -1,4 +1,5 @@
 ﻿var util = require('util');
+
 var Util = require('./Util');
 var Commands = require('./Commands');
 var VsConfig = require('./VsConfig');
@@ -12,7 +13,8 @@ var Cli;
             outputFile: argv.o || Util.outputFile,
             configFile: argv.c || Util.configFile,
             port: argv.p,
-            command: argv._[0] || ''
+            command: argv._[0] || '',
+            baseDir: Util.baseDir
         };
 
         args.config = Util.readConfigFile(argv.c || Util.configFile);

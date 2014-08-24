@@ -1,4 +1,5 @@
 ﻿import util = require('util');
+import path = require('path');
 import Util = require('./Util');
 import Commands = require('./Commands');
 import VsConfig = require('./VsConfig');
@@ -11,7 +12,8 @@ module Cli {
             outputFile: argv.o || Util.outputFile,
             configFile: argv.c || Util.configFile,
             port: argv.p,
-            command: argv._[0] || ''
+            command: argv._[0] || '',
+            baseDir: Util.baseDir
         };
 
         args.config = Util.readConfigFile(argv.c || Util.configFile);

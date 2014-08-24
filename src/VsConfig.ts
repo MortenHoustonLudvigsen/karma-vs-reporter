@@ -1,5 +1,6 @@
 ﻿import Util = require('./Util');
 import _ = require("lodash");
+import util = require('util');
 
 module VsConfig {
     export class Test {
@@ -71,7 +72,7 @@ module VsConfig {
     }
 
     export function load(file: string): Config {
-        return new Config(file ? Util.Try(() => Util.readJsonFile(file)) || {} : {});
+        return new Config(file ? Util.Try(() => Util.readJsonFile(Util.resolvePath(file))) || {} : {});
     }
 }
 

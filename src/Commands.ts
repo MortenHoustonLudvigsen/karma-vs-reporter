@@ -81,7 +81,8 @@ module Commands {
     }
 
     export function run(config: Util.Config, outputFile: string, vsConfig: VsConfig.Config, port?) {
-        var karmaConfig: any = extend(getKarmaConfig(config), {
+        var origConfig = getKarmaConfig(config);
+        var karmaConfig: any = {
             configFile: path.resolve(config.karmaConfigFile),
             reporters: ['progress', 'vs'],
             singleRun: true,
@@ -90,7 +91,7 @@ module Commands {
                 outputFile: outputFile,
                 vsConfig: vsConfig
             }
-        });
+        };
 
         if (_.isObject(config.config)) {
             karmaConfig = extend(karmaConfig, config.config);
@@ -104,6 +105,7 @@ module Commands {
                 served: f.served
             });
 
+            karmaConfig.preprocessors = origConfig.preprocessors || {};
             vsConfig.files.filter(f => f.hasTests()).forEach(f => {
                 karmaConfig.preprocessors[f.path] = ['vs'];
             });
