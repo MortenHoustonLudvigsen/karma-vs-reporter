@@ -10,6 +10,7 @@ module Javascript {
     export interface Position {
         line: number;
         column: number;
+        index?: number;
     }
 
     export interface MappedPosition extends Position {

@@ -10,7 +10,7 @@ var Test = require('./Test');
 var TestFileParser = (function (_super) {
     __extends(TestFileParser, _super);
     function TestFileParser() {
-        _super.call(this);
+        _super.apply(this, arguments);
         this.hasTests = false;
     }
     TestFileParser.prototype.parse = function (jsFile, file) {

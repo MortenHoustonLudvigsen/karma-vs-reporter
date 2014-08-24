@@ -1,6 +1,7 @@
 ﻿import Javascript = require('./Javascript');
 import Util = require("./Util");
 import _ = require("lodash");
+import util = require("util");
 
 var xmlbuilder = require('xmlbuilder');
 
@@ -54,8 +55,8 @@ module Test {
             return element.end({ pretty: true });
         }
 
-        public files(): Item {
-            var files = this.add(new Container('Files'));
+        public files(): Files {
+            var files = this.add(new Files());
             this.files = function () {
                 return files;
             };
@@ -137,7 +138,28 @@ module Test {
         }
     }
 
+    export class Files extends Container {
+        constructor() {
+            super('Files');
+        }
+
+        private _files: { [path: string]: File; } = {};
+
+        public add(file: File): File {
+            file = super.add(file);
+            this._files[Util.resolvePath(file.path)] = file;
+            return file;
+        }
+
+        public getFile(path: string): File {
+            return this._files[Util.resolvePath(path)] || this.add(new File(path));
+        }
+    }
+
     export class File extends Item {
+        public served: boolean = false;
+        public included: boolean = false;
+
         constructor(public path: string) {
             super();
             this.path = Util.resolvePath(this.path);
@@ -145,7 +167,9 @@ module Test {
 
         public toXml(parentElement): any {
             var element = parentElement.ele('File', {
-                Path: this.path
+                Path: this.path,
+                Served: this.served,
+                Included: this.included
             });
             this.children.forEach(function (child) {
                 child.toXml(element);
@@ -187,6 +211,7 @@ module Test {
         public framework: string;
         public position: Javascript.Position;
         public originalPosition: Javascript.MappedPosition;
+        public index: number;
 
         constructor(public name: string) {
             super();
@@ -201,6 +226,13 @@ module Test {
             if (this.position) {
                 attributes.Line = this.position.line;
                 attributes.Column = this.position.column;
+                if (_.isNumber(this.position.index)) {
+                    attributes.Index = this.position.index;
+                }
+            }
+
+            if (_.isNumber(this.index)) {
+                attributes.index = this.index;
             }
 
             var element = parentElement.ele('Test', attributes);

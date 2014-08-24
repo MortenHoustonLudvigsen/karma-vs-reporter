@@ -1,5 +1,7 @@
-﻿var Util = require('./Util');
+﻿var util = require('util');
+var Util = require('./Util');
 var Commands = require('./Commands');
+var VsConfig = require('./VsConfig');
 
 var Cli;
 (function (Cli) {
@@ -10,9 +12,11 @@ var Cli;
             outputFile: argv.o || Util.outputFile,
             configFile: argv.c || Util.configFile,
             port: argv.p,
-            command: argv._[0] || '',
-            config: Util.readConfigFile(argv.c || Util.configFile)
+            command: argv._[0] || ''
         };
+
+        args.config = Util.readConfigFile(argv.c || Util.configFile);
+        args.vsConfig = VsConfig.load(argv.v);
 
         switch (args.command.toLowerCase()) {
             case "init":
@@ -22,7 +26,10 @@ var Cli;
                 Commands.discover(args.config, args.outputFile);
                 break;
             case "run":
-                Commands.run(args.config, args.outputFile, args.port);
+                Commands.run(args.config, args.outputFile, args.vsConfig, args.port);
+                break;
+            case "args":
+                console.log(util.inspect(args, { depth: null }));
                 break;
             default:
                 console.error("Command " + JSON.stringify(args.command) + " not recognized");

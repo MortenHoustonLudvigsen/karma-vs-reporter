@@ -2,6 +2,7 @@
 import Util = require('./Util');
 import Javascript = require('./Javascript');
 import Test = require('./Test');
+import VsConfig = require('./VsConfig');
 import JasmineParser = require('./JasmineParser');
 import path = require('path');
 import parseFiles = require('./ParseFiles');
@@ -13,13 +14,9 @@ module Commands {
         Util.writeConfigFile(configFile);
     }
 
-    export function discover(config: Util.Config, outputFile: string) {
-        var di = require('karma/node_modules/di');
-        var cfg = require('karma/lib/config');
+    function getKarmaConfig(config: Util.Config) {
         var logger = require("karma/lib/logger");
-        var preprocessor = require('karma/lib/preprocessor');
-        var fileList = require('karma/lib/file_list').List;
-        var emitter = require('karma/lib/events').EventEmitter;
+        var cfg = require('karma/lib/config');
         var karmaConfigFile = path.resolve(config.karmaConfigFile);
 
         // Config
@@ -28,12 +25,8 @@ module Commands {
 
         var karmaConfig: any = {
             singleRun: true,
-            browsers: [
-                //'PhantomJS'
-            ],
-            reporters: [
-                //'dots'
-            ],
+            browsers: [],
+            reporters: [],
             colors: false,
             logLevel: 'INFO'
         };
@@ -42,7 +35,16 @@ module Commands {
             karmaConfig = extend(karmaConfig, config.config);
         }
 
-        karmaConfig = cfg.parseConfig(karmaConfigFile, karmaConfig);
+        return cfg.parseConfig(karmaConfigFile, karmaConfig);
+    }
+
+    export function discover(config: Util.Config, outputFile: string) {
+        var di = require('karma/node_modules/di');
+        var logger = require("karma/lib/logger");
+        var preprocessor = require('karma/lib/preprocessor');
+        var fileList = require('karma/lib/file_list').List;
+        var emitter = require('karma/lib/events').EventEmitter;
+        var karmaConfig = getKarmaConfig(config);
 
         var modules = [{
             logger: ['value', logger],
@@ -52,53 +54,66 @@ module Commands {
             fileList: ['type', fileList]
         }];
 
-        var discoverTests;
-        discoverTests = function (fileList, logger) {
-            var karma = new Test.Karma();
+        var discoverTests: any = function (fileList, logger, config) {
+            var log = Util.createLogger(logger);
+            try {
+                Util.baseDir = config.basePath;
+                var karma = new Test.Karma();
 
-            karma.add(new Test.KarmaConfig(karmaConfig));
+                karma.add(new Test.KarmaConfig(karmaConfig));
 
-            fileList.refresh().then(function (files) {
-                try {
-                    parseFiles(karma, files, log);
-                    var xml = karma.toXml();
-                    Util.writeFile(outputFile, karma.toXml());
-                } catch (e) {
-                    log.error(e);
-                }
-            });
+                fileList.refresh().then(function (files) {
+                    try {
+                        parseFiles(karma, files, log);
+                        var xml = karma.toXml();
+                        Util.writeFile(outputFile, karma.toXml());
+                    } catch (e) {
+                        log.error(e);
+                    }
+                });
+            } catch (e) {
+                log.error(e);
+            }
         }
-        discoverTests.$inject = ['fileList', 'logger'];
+        discoverTests.$inject = ['fileList', 'logger', 'config'];
 
-        try {
-            new di.Injector(modules).invoke(discoverTests);
-        } catch (e) {
-            log.error(e);
-        }
+        new di.Injector(modules).invoke(discoverTests);
     }
 
-    export function run(config: Util.Config, outputFile: string, port?) {
-        var server = require('karma').server;
-        var karmaConfig: any = {
+    export function run(config: Util.Config, outputFile: string, vsConfig: VsConfig.Config, port?) {
+        var karmaConfig: any = extend(getKarmaConfig(config), {
             configFile: path.resolve(config.karmaConfigFile),
             reporters: ['progress', 'vs'],
             singleRun: true,
-            colors: false
-        };
+            colors: false,
+            vsReporter: {
+                outputFile: outputFile,
+                vsConfig: vsConfig
+            }
+        });
 
         if (_.isObject(config.config)) {
             karmaConfig = extend(karmaConfig, config.config);
         }
 
-        karmaConfig.vsReporter = {
-            outputFile: outputFile
-        };
+        if (vsConfig.hasFiles()) {
+            karmaConfig.files = vsConfig.files.map(f => <any>{
+                pattern: f.path,
+                watched: false,
+                included: f.included,
+                served: f.served
+            });
+
+            vsConfig.files.filter(f => f.hasTests()).forEach(f => {
+                karmaConfig.preprocessors[f.path] = ['vs'];
+            });
+        }
 
         if (port) {
             karmaConfig.port = port;
         }
 
-        server.start(karmaConfig, function (exitCode) {
+        require('karma').server.start(karmaConfig, function (exitCode) {
             process.exit(exitCode);
         });
     }

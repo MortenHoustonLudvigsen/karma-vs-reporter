@@ -5,30 +5,32 @@ var Parser = (function () {
     }
     Parser.prototype.traverse = function (program) {
         var _this = this;
-        this.program = program;
-        this.node = undefined;
-        try  {
-            traverse(program.ast, {
-                pre: function (node) {
-                    _this.node = node;
-                    _this.node.callbacks = [];
-                    _this.enterNode(_this.node);
-                },
-                post: function (node) {
-                    _this.node = node;
-                    try  {
-                        _this.node.callbacks.forEach(function (callback) {
-                            callback.action.call(callback.target, this.node);
-                        }, _this);
-                        _this.exitNode(_this.node);
-                    } finally {
-                        delete _this.node.callbacks;
-                    }
-                }
-            });
-        } finally {
-            this.program = undefined;
+        if (program.ast) {
+            this.program = program;
             this.node = undefined;
+            try  {
+                traverse(program.ast, {
+                    pre: function (node) {
+                        _this.node = node;
+                        _this.node.callbacks = [];
+                        _this.enterNode(_this.node);
+                    },
+                    post: function (node) {
+                        _this.node = node;
+                        try  {
+                            _this.node.callbacks.forEach(function (callback) {
+                                callback.action.call(callback.target, this.node);
+                            }, _this);
+                            _this.exitNode(_this.node);
+                        } finally {
+                            delete _this.node.callbacks;
+                        }
+                    }
+                });
+            } finally {
+                this.program = undefined;
+                this.node = undefined;
+            }
         }
     };
 
@@ -62,7 +64,11 @@ var Parser = (function () {
     };
 
     Parser.prototype.getPosition = function () {
-        return this.node.loc.start;
+        return {
+            line: this.node.loc.start.line,
+            column: this.node.loc.start.column,
+            index: this.node.range[0]
+        };
     };
 
     Parser.prototype.getOriginalPosition = function () {

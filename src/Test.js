@@ -57,7 +57,7 @@ var Test;
         };
 
         Karma.prototype.files = function () {
-            var files = this.add(new Container('Files'));
+            var files = this.add(new Files());
             this.files = function () {
                 return files;
             };
@@ -149,16 +149,39 @@ var Test;
     })(Item);
     _Test.Container = Container;
 
+    var Files = (function (_super) {
+        __extends(Files, _super);
+        function Files() {
+            _super.call(this, 'Files');
+            this._files = {};
+        }
+        Files.prototype.add = function (file) {
+            file = _super.prototype.add.call(this, file);
+            this._files[Util.resolvePath(file.path)] = file;
+            return file;
+        };
+
+        Files.prototype.getFile = function (path) {
+            return this._files[Util.resolvePath(path)] || this.add(new File(path));
+        };
+        return Files;
+    })(Container);
+    _Test.Files = Files;
+
     var File = (function (_super) {
         __extends(File, _super);
         function File(path) {
             _super.call(this);
             this.path = path;
+            this.served = false;
+            this.included = false;
             this.path = Util.resolvePath(this.path);
         }
         File.prototype.toXml = function (parentElement) {
             var element = parentElement.ele('File', {
-                Path: this.path
+                Path: this.path,
+                Served: this.served,
+                Included: this.included
             });
             this.children.forEach(function (child) {
                 child.toXml(element);
@@ -212,6 +235,13 @@ var Test;
             if (this.position) {
                 attributes.Line = this.position.line;
                 attributes.Column = this.position.column;
+                if (_.isNumber(this.position.index)) {
+                    attributes.Index = this.position.index;
+                }
+            }
+
+            if (_.isNumber(this.index)) {
+                attributes.index = this.index;
             }
 
             var element = parentElement.ele('Test', attributes);

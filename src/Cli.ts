@@ -1,18 +1,21 @@
 ﻿import util = require('util');
 import Util = require('./Util');
 import Commands = require('./Commands');
+import VsConfig = require('./VsConfig');
 
 module Cli {
     export function run() {
         var argv = require('yargs').argv;
 
-        var args = {
+        var args: any = {
             outputFile: argv.o || Util.outputFile,
             configFile: argv.c || Util.configFile,
             port: argv.p,
-            command: argv._[0] || '',
-            config: Util.readConfigFile(argv.c || Util.configFile)
+            command: argv._[0] || ''
         };
+
+        args.config = Util.readConfigFile(argv.c || Util.configFile);
+        args.vsConfig = VsConfig.load(argv.v);
 
         switch (args.command.toLowerCase()) {
             case "init":
@@ -22,7 +25,10 @@ module Cli {
                 Commands.discover(args.config, args.outputFile);
                 break;
             case "run":
-                Commands.run(args.config, args.outputFile, args.port);
+                Commands.run(args.config, args.outputFile, args.vsConfig, args.port);
+                break;
+            case "args":
+                console.log(util.inspect(args, { depth: null }));
                 break;
             default:
                 console.error("Command " + JSON.stringify(args.command) + " not recognized");

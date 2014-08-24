@@ -6,30 +6,32 @@ class Parser {
     public program: Javascript.Program;
 
     public traverse(program: Javascript.Program) {
-        this.program = program;
-        this.node = undefined;
-        try {
-            traverse(program.ast, {
-                pre: node => {
-                    this.node = node;
-                    this.node.callbacks = [];
-                    this.enterNode(this.node);
-                },
-                post: node => {
-                    this.node = node;
-                    try {
-                        this.node.callbacks.forEach(function (callback) {
-                            callback.action.call(callback.target, this.node);
-                        }, this);
-                        this.exitNode(this.node);
-                    } finally {
-                        delete this.node.callbacks;
-                    }
-                }
-            });
-        } finally {
-            this.program = undefined;
+        if (program.ast) {
+            this.program = program;
             this.node = undefined;
+            try {
+                traverse(program.ast, {
+                    pre: node => {
+                        this.node = node;
+                        this.node.callbacks = [];
+                        this.enterNode(this.node);
+                    },
+                    post: node => {
+                        this.node = node;
+                        try {
+                            this.node.callbacks.forEach(function (callback) {
+                                callback.action.call(callback.target, this.node);
+                            }, this);
+                            this.exitNode(this.node);
+                        } finally {
+                            delete this.node.callbacks;
+                        }
+                    }
+                });
+            } finally {
+                this.program = undefined;
+                this.node = undefined;
+            }
         }
     }
 
@@ -60,7 +62,11 @@ class Parser {
     }
 
     public getPosition() {
-        return this.node.loc.start;
+        return {
+            line: this.node.loc.start.line,
+            column: this.node.loc.start.column,
+            index: this.node.range[0]
+        };
     }
 
     public getOriginalPosition() {

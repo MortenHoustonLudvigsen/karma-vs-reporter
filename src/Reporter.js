@@ -7,9 +7,9 @@ var path = require('path');
 var parseFiles = require('./ParseFiles');
 var _ = require("lodash");
 
-var Reporter;
-Reporter = function Reporter(baseReporterDecorator, config, fileList, helper, logger, formatError, emitter) {
+var Reporter = function Reporter(baseReporterDecorator, config, fileList, helper, logger, formatError, emitter) {
     baseReporterDecorator(this);
+    Util.baseDir = config.basePath;
 
     var log = Util.createLogger(logger);
     var outputFile = config.vsReporter.outputFile || helper.normalizeWinPath(path.resolve(config.basePath, Util.outputFile));

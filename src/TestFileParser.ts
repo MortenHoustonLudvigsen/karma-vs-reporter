@@ -7,10 +7,6 @@ class TestFileParser extends Parser {
     private parents: Array<Test.Item>;
     private hasTests = false;
 
-    constructor() {
-        super();
-    }
-
     public parse(jsFile: Javascript.Program, file: Test.File): boolean {
         this.items = file;
         this.parents = [];

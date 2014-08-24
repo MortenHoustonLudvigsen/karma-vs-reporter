@@ -61,13 +61,33 @@
     </Content>
     <None Include="karma-vs-reporter" />
     <Content Include="package.json" />
+    <Content Include="src\JasminePreprocessor.js">
+      <DependentUpon>JasminePreprocessor.ts</DependentUpon>
+    </Content>
     <Content Include="src\ParseFiles.js.map">
       <DependentUpon>ParseFiles.ts</DependentUpon>
     </Content>
+    <Content Include="src\Preprocessor.js">
+      <DependentUpon>Preprocessor.ts</DependentUpon>
+    </Content>
+    <Content Include="src\VsConfig.js">
+      <DependentUpon>VsConfig.ts</DependentUpon>
+    </Content>
+    <Content Include="test\karma.conf.js" />
     <Content Include="test\karma.test.conf.js" />
     <Content Include="test\discover.cmd" />
     <Content Include="README.md" />
     <Content Include="test\karma-vs-reporter.test.json" />
+    <Content Include="src\Preprocessor.js.map">
+      <DependentUpon>Preprocessor.ts</DependentUpon>
+    </Content>
+    <Content Include="src\VsConfig.js.map">
+      <DependentUpon>VsConfig.ts</DependentUpon>
+    </Content>
+    <Content Include="test\args.cmd" />
+    <Content Include="src\JasminePreprocessor.js.map">
+      <DependentUpon>JasminePreprocessor.ts</DependentUpon>
+    </Content>
     <None Include="test\run.cmd" />
     <Content Include="test\testfiles\Testfile1.js">
       <DependentUpon>Testfile1.ts</DependentUpon>
@@ -84,6 +104,7 @@
     <Content Include="test\testfiles\TestFile2.js.map">
       <DependentUpon>TestFile2.ts</DependentUpon>
     </Content>
+    <Content Include="test\VsConfig.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="src\Cli.js">
@@ -126,14 +147,17 @@
     <TypeScriptCompile Include="src\Cli.ts" />
     <TypeScriptCompile Include="src\Commands.ts" />
     <TypeScriptCompile Include="src\JasmineParser.ts" />
+    <TypeScriptCompile Include="src\JasminePreprocessor.ts" />
     <TypeScriptCompile Include="src\Javascript.ts" />
     <TypeScriptCompile Include="src\ParseFiles.ts" />
     <TypeScriptCompile Include="src\Parser.ts" />
+    <TypeScriptCompile Include="src\Preprocessor.ts" />
     <TypeScriptCompile Include="src\Reporter.ts" />
     <TypeScriptCompile Include="src\Test.ts" />
     <TypeScriptCompile Include="src\TestFileParser.ts" />
     <TypeScriptCompile Include="src\TestResults.ts" />
     <TypeScriptCompile Include="src\Util.ts" />
+    <TypeScriptCompile Include="src\VsConfig.ts" />
     <TypeScriptCompile Include="test\testfiles\references.d.ts" />
     <TypeScriptCompile Include="test\testfiles\Testfile1.ts" />
     <TypeScriptCompile Include="test\testfiles\TestFile2.ts" />
@@ -200,7 +224,9 @@
   <ItemGroup>
     <Content Include=".npmignore" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="src\Cli.js.map">
       <DependentUpon>Cli.ts</DependentUpon>
