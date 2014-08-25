@@ -78,6 +78,12 @@ var Javascript;
                 comment: true
             });
 
+            if (tokens === null) {
+                return [];
+            }
+
+            tokens.comments = tokens.comments || [];
+
             // Add comments
             tokens.comments.forEach(function (token) {
                 if (token.type === 'Line') {

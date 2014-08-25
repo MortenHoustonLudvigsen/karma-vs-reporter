@@ -68,26 +68,6 @@ var Reporter: any = function Reporter(baseReporterDecorator, config, fileList, h
                 });
             });
 
-
-
-            //browserResults.forEach(function (res) {
-            //    var parent: Test.Item = karma.results();
-            //    res.result.suite.forEach(function (s) {
-            //        parent = parent.add(new Test.SuiteResult(s));
-            //    });
-            //    var test = new Test.TestResult(res.result.description);
-            //    test.id = res.result.id;
-            //    test.browser = res.browser.name;
-            //    test.time = res.result.time;
-            //    test.outcome = getOutcome(res.result);
-
-            //    res.result.log.forEach(function (line) {
-            //        test.log.push(formatError(line).replace(/\s+$/, ''));
-            //    });
-
-            //    parent.add(test);
-            //});
-
             try {
                 Util.writeFile(outputFile, karma.toXml());
             } catch (e) {
@@ -95,10 +75,6 @@ var Reporter: any = function Reporter(baseReporterDecorator, config, fileList, h
             }
         });
     };
-
-    // wait for writing all the xml files, before exiting
-    //this.onExit = function (done) {
-    //};
 
     function getOutcome(result): Test.Outcome {
         if (result.success) return Test.Outcome.Success;

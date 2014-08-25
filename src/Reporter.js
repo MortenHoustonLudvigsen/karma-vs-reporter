@@ -75,9 +75,6 @@ var Reporter = function Reporter(baseReporterDecorator, config, fileList, helper
         });
     };
 
-    // wait for writing all the xml files, before exiting
-    //this.onExit = function (done) {
-    //};
     function getOutcome(result) {
         if (result.success)
             return 0 /* Success */;
